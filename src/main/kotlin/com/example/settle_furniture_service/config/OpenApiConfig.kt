@@ -25,7 +25,7 @@ class OpenApiConfig {
             .type(SecurityScheme.Type.HTTP)
             .scheme("bearer")
             .bearerFormat("JWT")
-            .name("Authorization")
+            .`in`(SecurityScheme.In.HEADER)
 
         val securityRequirement = SecurityRequirement()
             .addList("bearerAuth")
