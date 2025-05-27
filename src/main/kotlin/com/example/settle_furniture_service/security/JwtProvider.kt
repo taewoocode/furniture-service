@@ -2,20 +2,22 @@ package com.example.settle_furniture_service.security
 
 import com.example.settle_furniture_service.config.JwtConfig
 import com.example.settle_furniture_service.user.domain.User
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.*
+import io.jsonwebtoken.security.Keys
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
+import java.security.Key
 import java.util.*
 
 /**
- * JWT 토큰을 생성하고 검증하는 서비스
+ * JWT 토큰을 생성하고 검증하는 프로바이더
  */
 @Component
-class JwtTokenProvider(
+class JwtProvider(
     private val jwtConfig: JwtConfig
 ) {
+    private val key: Key = Keys.hmacShaKeyFor(jwtConfig.secret.toByteArray())
+
     /**
      * 사용자 정보로 JWT 토큰을 생성합니다.
      * @param user 토큰을 생성할 사용자
@@ -32,7 +34,7 @@ class JwtTokenProvider(
             .setIssuedAt(now)
             .setExpiration(expiration)
             .setIssuer(jwtConfig.issuer)
-            .signWith(SignatureAlgorithm.HS256, jwtConfig.secret)
+            .signWith(key)
             .compact()
     }
 
@@ -43,11 +45,12 @@ class JwtTokenProvider(
      * @throws JwtException 토큰이 유효하지 않은 경우
      */
     fun getEmailFromToken(token: String): String {
-        return Jwts.parser()
-            .setSigningKey(jwtConfig.secret)
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
             .parseClaimsJws(token)
             .body
-            .subject
+        return claims.subject
     }
 
     /**
@@ -58,8 +61,9 @@ class JwtTokenProvider(
      */
     fun validateToken(token: String, userDetails: UserDetails): Boolean {
         return try {
-            val claims: Claims = Jwts.parser()
-                .setSigningKey(jwtConfig.secret)
+            val claims: Claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .body
 
