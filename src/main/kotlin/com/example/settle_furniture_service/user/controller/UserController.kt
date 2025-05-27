@@ -1,7 +1,9 @@
 package com.example.settle_furniture_service.user.controller
 
-import com.example.settle_furniture_service.common.docs.SwaggerDocs
+import com.example.settle_furniture_service.user.dto.FindUserByEmailInfo
+import com.example.settle_furniture_service.user.dto.FindUserByIdInfo
 import com.example.settle_furniture_service.user.dto.SignUpInfo
+import com.example.settle_furniture_service.user.dto.UserLoginInfo
 import com.example.settle_furniture_service.user.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -15,60 +17,59 @@ import org.springframework.web.bind.annotation.*
  */
 @Tag(name = "User", description = "사용자 관련 API")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 class UserController(
     private val userService: UserService
 ) {
-    /**
-     * 회원가입 API
-     * @param request 회원가입 요청 정보
-     * @return 회원가입 결과
-     */
+
     @Operation(
-        summary = SwaggerDocs.User.SUMMARY_SIGNUP,
-        description = SwaggerDocs.User.DESCRIPTION_SIGNUP
+        summary = "회원가입",
+        description = "새로운 사용자를 등록합니다"
     )
     @PostMapping("/signup")
     fun signUp(
-        @Valid @RequestBody request: SignUpInfo.Request
-    ): ResponseEntity<SignUpInfo.Response> {
-        val response = userService.signUp(request)
-        return ResponseEntity.ok(response)
+        @Valid @RequestBody request: SignUpInfo.SignUpInfoRequest
+    ): ResponseEntity<SignUpInfo.SignUpInfoResponse> {
+        return ResponseEntity.ok(userService.signUp(request))
     }
 
-    /**
-     * 이메일로 사용자 조회 API
-     * @param email 조회할 사용자의 이메일
-     * @return 사용자 정보
-     */
+
     @Operation(
-        summary = SwaggerDocs.User.SUMMARY_FIND_BY_EMAIL,
-        description = SwaggerDocs.User.DESCRIPTION_FIND_BY_EMAIL
+        summary = "로그인",
+        description = "이메일과 비밀번호로 로그인합니다"
     )
-    @GetMapping("/email/{email}")
-    fun findByEmail(
-        @Parameter(description = SwaggerDocs.User.PARAM_EMAIL, required = true)
-        @PathVariable email: String
-    ): ResponseEntity<SignUpInfo.Response> {
-        val response = userService.findByEmail(email)
-        return ResponseEntity.ok(response)
+    @PostMapping("/login")
+    fun login(
+        @Valid @RequestBody request: UserLoginInfo.UserLoginInfoRequest
+    ): ResponseEntity<UserLoginInfo.UserLoginInfoResponse> {
+        return ResponseEntity.ok(userService.login(request))
     }
 
-    /**
-     * ID로 사용자 조회 API
-     * @param id 조회할 사용자의 ID
-     * @return 사용자 정보
-     */
+
     @Operation(
-        summary = SwaggerDocs.User.SUMMARY_FIND_BY_ID,
-        description = SwaggerDocs.User.DESCRIPTION_FIND_BY_ID
+        summary = "이메일로 사용자 조회",
+        description = "이메일로 사용자 정보를 조회합니다"
+    )
+    @PostMapping("/email/{email}")
+    fun findByEmail(
+        @Parameter(description = "사용자 이메일", required = true)
+        @Valid @RequestBody request: FindUserByEmailInfo.FindUserByEmailRequest
+    ): ResponseEntity<FindUserByEmailInfo.FindUserByEmailResponse> {
+        val findByEmail: FindUserByEmailInfo.FindUserByEmailResponse = userService.findByEmail(request)
+        return ResponseEntity.ok(findByEmail)
+    }
+
+
+    @Operation(
+        summary = "ID로 사용자 조회",
+        description = "ID로 사용자 정보를 조회합니다"
     )
     @GetMapping("/{id}")
     fun findById(
-        @Parameter(description = SwaggerDocs.User.PARAM_ID, required = true)
+        @Parameter(description = "사용자 ID", required = true)
         @PathVariable id: Long
-    ): ResponseEntity<SignUpInfo.Response> {
-        val response = userService.findById(id)
-        return ResponseEntity.ok(response)
+    ): ResponseEntity<FindUserByIdInfo.FindUserByIdResponse> {
+        val request = FindUserByIdInfo.FindUserByIdRequest(id = id)
+        return ResponseEntity.ok(userService.findById(request))
     }
 }
