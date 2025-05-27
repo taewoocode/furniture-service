@@ -25,25 +25,4 @@ object SwaggerDocs {
         const val PARAM_EMAIL = "사용자 이메일"
         const val PARAM_ID = "사용자 ID"
     }
-
-    /**===================================================================
-     *                      DTO 관련 Swagger Docs
-     * ===================================================================
-     */
-    object Dto {
-        // UserSignUpRequest
-        const val REQUEST_SIGNUP = "회원가입 요청 정보"
-        const val FIELD_EMAIL = "사용자의 이메일 주소 (로그인 ID로 사용)"
-        const val FIELD_PASSWORD = "사용자의 비밀번호 (영문, 숫자, 특수문자 포함 8-20자)"
-        const val FIELD_NAME = "사용자의 실명 (2-20자)"
-        const val FIELD_PHONE_NUMBER = "사용자의 전화번호 (010-XXXX-XXXX 형식)"
-        const val FIELD_ADDRESS = "사용자의 주소"
-        const val FIELD_PROFILE_IMAGE = "사용자의 프로필 이미지 URL"
-
-        // UserSignUpResponse
-        const val RESPONSE_SIGNUP = "회원가입 응답 정보"
-        const val FIELD_USER_ID = "사용자 ID"
-        const val FIELD_TOKEN = "JWT 토큰"
-        const val FIELD_ROLE = "사용자 ID"
-    }
 } 
